@@ -1,0 +1,18 @@
+@import "~bootstrap/scss/bootstrap";
+
+#navbar-menu.active {
+    display: block;
+}
+
+.form-control::placeholder {
+    color: #cccccc;
+}
+
+.dark:text-gray-300{
+    font-weight: bold;
+}
+label {
+    font-weight: 600;
+}
+
+

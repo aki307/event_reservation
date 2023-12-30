@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
+
 
 class RegisteredUserController extends Controller
 {
@@ -20,7 +23,10 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $userTypes = DB::table('user_types')->get(); 
+        $groups = DB::table('groups')->get();
+        $study = Config::get('category.$language');
+        return view('auth.register', ['userTypes' => $userTypes, 'groups' => $groups]);
     }
 
     /**
@@ -31,22 +37,28 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'login_id' => ['required', 'string','min:6', 'max:22', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'user_name' => ['required', 'string','min:6', 'max:40'],
+            'user_type_id' => ['required', 'exists:user_types,id'], // user_typesテーブルのidカラムに存在するかチェック
+            'group_id' => ['required', 'exists:groups,id'], // groupsテーブルのidカラムに存在するかチェック
+    
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'user_name' => $request->user_name,
+            'login_id' => $request->login_id,
+            'password' => $request->password,
             'password' => Hash::make($request->password),
+            'user_type_id' => $request->user_type_id,
+            'group_id' => $request->group_id,
         ]);
 
         event(new Registered($user));
 
         // Auth::login($user);
 
-        return redirect('/user-registration-completed');
+        return redirect('/user/registration-completed');
 
         // return redirect(RouteServiceProvider::HOME);
     }
