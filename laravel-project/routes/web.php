@@ -30,7 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/registration-completed', function () {
         return view('users.registration-completed');
     })->name('registration.completed');
-    
+
     Route::get('/logout', function () {
         return view('logout');
     })->name('logout');
@@ -40,22 +40,11 @@ Route::middleware('auth')->group(function () {
     Route::get('users', [UsersController::class, 'index'])->name('users.index');
     Route::get('users/{user}', [UsersController::class, 'show'])->name('users.show');
 });
-
+// adminユーザーのみがアクセス可能なルート
 Route::middleware('admin')->group(function () {
-    // adminユーザーのみがアクセス可能なルート
     Route::get('register', [RegisteredUserController::class, 'create'])
-    ->name('register');
-
+        ->name('register');
     Route::post('register', [RegisteredUserController::class, 'store']);
     Route::resource('users', UsersController::class)->only(['edit', 'update', 'destroy']);
-    // その他のadmin限定ルート...
 });
-
- 
-
-
-
-
-
 require __DIR__ . '/auth.php';
-

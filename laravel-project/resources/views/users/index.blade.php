@@ -16,7 +16,6 @@
         </tr>
     </thead>
     <tbody>
-
         @foreach ($users as $user)
         <tr>
             <th scope="row">{{ $user->id }}</th>
@@ -30,15 +29,11 @@
             </td>
         </tr>
         @endforeach
-
     </tbody>
-
 </table>
 <div class="flex items-center justify-end mt-4">
     <a class="btn btn-primary btn-block" href="{{ route('register') }}">ユーザ登録</a>
 </div>
-
-
 @else
 <p>ユーザー登録がまだされていません</p>
 @endif

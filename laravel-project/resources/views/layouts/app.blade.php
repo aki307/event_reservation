@@ -12,7 +12,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
     {{-- Viteのアセット --}}
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
-    
+
 </head>
 
 <body>
