@@ -39,5 +39,7 @@
 </div>
 
 
+@else
+<p>ユーザー登録がまだされていません</p>
 @endif
 @endsection

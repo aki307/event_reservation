@@ -6,21 +6,24 @@ use Illuminate\Http\Request;
 use App\Services\UserService;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
+use App\Services\GroupService;
 
 
 class UsersController extends Controller
 {
     protected $userService;
+    protected $groupService;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, GroupService $groupService)
     {
         $this->userService = $userService;
+        $this->groupService = $groupService;
     }
 
     public function index()
     {
         $users = $this->userService->getAllUsers();
-        $groups = $this->userService->getAllGroups();
+        $groups = $this->groupService->getAllGroups();
 
         return view('users.index', compact('users', 'groups'));
     }
@@ -28,7 +31,7 @@ class UsersController extends Controller
     public function show($id)
     {
         $user = $this->userService->getUserById($id);
-        $groups = $this->userService->getAllGroups();
+        $groups = $this->groupService->getAllGroups();
 
         return view('users.show', compact('user', 'groups'));
     }
@@ -36,7 +39,7 @@ class UsersController extends Controller
     public function edit($id)
     {
         $user = $this->userService->getUserById($id);
-        $groups = $this->userService->getAllGroups();
+        $groups = $this->groupService->getAllGroups();
         $userTypes = $this->userService->getAllUserTypes();
 
         return view('users.edit', compact('user', 'groups', 'userTypes'));
