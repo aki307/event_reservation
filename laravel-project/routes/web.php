@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\UsersController;
+use Illuminate\Support\Facades\Auth;
 
 
 
@@ -22,35 +23,39 @@ use App\Http\Controllers\UsersController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return Auth::check() ? redirect('/events/index') : redirect('/login');
 });
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/user/registration-completed', function () {
+        return view('users.registration-completed');
+    })->name('registration.completed');
+    
+    Route::get('/logout', function () {
+        return view('logout');
+    })->name('logout');
+    Route::get('/events/index', function () {
+        return view('events.index');
+    });
+    Route::get('users', [UsersController::class, 'index'])->name('users.index');
+    Route::get('users/{user}', [UsersController::class, 'show'])->name('users.show');
 });
 
-Route::get('/user/registration-completed', function () {
-    return view('users.registration-completed');
-})->name('registration.completed');
+Route::middleware('admin')->group(function () {
+    // adminユーザーのみがアクセス可能なルート
+    Route::get('register', [RegisteredUserController::class, 'create'])
+    ->name('register');
 
-
-require __DIR__.'/auth.php';
-
-Route::get('signup', [RegisteredUserController::class, 'create'])->name('signup.get');
-Route::post('signup', [RegisteredUserController::class, 'register'])->name('signup.post');
-
-Route::resource('users', UsersController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
-Route::get('/logout', function () {
-    return view('logout'); 
-})->name('logout');
-
-Route::get('/events/index', function () {
-    return view('events.index'); // ここでlogout.blade.phpを指定
+    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::resource('users', UsersController::class)->only(['edit', 'update', 'destroy']);
+    // その他のadmin限定ルート...
 });
+
+ 
+
+
+
+
+
+require __DIR__ . '/auth.php';
 

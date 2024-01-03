@@ -16,14 +16,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 
 
+
 class RegisteredUserController extends Controller
 {
+    
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create()
     {
-        $userTypes = DB::table('user_types')->get(); 
+        
+        $userTypes = DB::table('user_types')->get();
         $groups = DB::table('groups')->get();
         $study = Config::get('category.$language');
         return view('auth.register', ['userTypes' => $userTypes, 'groups' => $groups]);
@@ -37,12 +40,12 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'login_id' => ['required', 'string','min:6', 'max:22', 'unique:'.User::class],
+            'login_id' => ['required', 'string', 'min:6', 'max:22', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'user_name' => ['required', 'string','min:6', 'max:40'],
+            'user_name' => ['required', 'string', 'min:6', 'max:40'],
             'user_type_id' => ['required', 'exists:user_types,id'], // user_typesテーブルのidカラムに存在するかチェック
             'group_id' => ['required', 'exists:groups,id'], // groupsテーブルのidカラムに存在するかチェック
-    
+
         ]);
 
         $user = User::create([

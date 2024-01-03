@@ -74,7 +74,7 @@
 
 
       <div class="flex items-center justify-end mt-4">
-        <a class="btn btn-light btn-block " href="{{ route('register') }}">キャンセル</a>
+        <a class="btn btn-light btn-block " href="{{ route('users.index')}}">キャンセル</a>
 
         <x-primary-button class="btn btn-primary btn-block">
           {{ __('登録') }}

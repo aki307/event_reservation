@@ -49,4 +49,21 @@ class User extends Authenticatable
     {
         return $this->hasMany(Group::class);
     }
+
+     /**
+     * 
+     *管理ユーザーと一般ユーザーの識別
+     * 
+     */
+
+    
+    public function isAdmin()
+    {
+        return $this->user_type_id == 2; // adminユーザー
+    }
+
+    public function isGeneral()
+    {
+        return $this->user_type_id == 1; // generalユーザー
+    }
 }

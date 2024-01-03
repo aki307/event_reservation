@@ -1,9 +1,3 @@
-import './bootstrap';
-import Alpine from 'alpinejs';
-
-window.Alpine = Alpine;
-
-Alpine.start();
 
 window.addEventListener('DOMContentLoaded', (event) => {
     const navbarToggler = document.getElementById('navbar-toggler');
@@ -17,5 +11,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
         console.error('Navbar elements not found!');
     }
 
-   
+    // 削除ボタン
+    const deleteUserButton = document.getElementById('deleteUserButton');
+    if (deleteUserButton) {
+        deleteUserButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            if (confirm('本当に削除してよろしいですか？')) {
+                document.getElementById('delete-form').submit();
+            }
+        });
+    }
 });

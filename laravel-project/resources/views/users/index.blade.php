@@ -35,7 +35,7 @@
 
 </table>
 <div class="flex items-center justify-end mt-4">
-<a class="btn btn-primary btn-block" href="{{ route('register') }}">ユーザ登録</a>
+    <a class="btn btn-primary btn-block" href="{{ route('register') }}">ユーザ登録</a>
 </div>
 
 
