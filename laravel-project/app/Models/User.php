@@ -18,9 +18,11 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
+        'login_id',
         'password',
+        'user_name',
+        'user_type_id',
+        'group_id'
     ];
 
     /**
@@ -42,4 +44,26 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function groups()
+    {
+        return $this->hasMany(Group::class);
+    }
+
+     /**
+     * 
+     *管理ユーザーと一般ユーザーの識別
+     * 
+     */
+
+    
+    public function isAdmin()
+    {
+        return $this->user_type_id == 2; // adminユーザー
+    }
+
+    public function isGeneral()
+    {
+        return $this->user_type_id == 1; // generalユーザー
+    }
 }

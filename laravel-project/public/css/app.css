@@ -1,0 +1,22 @@
+
+
+#navbar-menu.active {
+    display: block;
+}
+
+.form-control::placeholder {
+    color: #cccccc;
+}
+
+.dark:text-gray-300{
+    font-weight: bold;
+}
+label {
+    font-weight: 600;
+}
+
+.navbar-nav .nav-link.active {
+    background-color: #6c757d; /* Adjust the color to match the provided screenshot */
+    color: white;
+}
+
