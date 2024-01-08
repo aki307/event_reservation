@@ -24,6 +24,7 @@ class GroupsTableSeeder extends Seeder
             ['name' => 'GENERAL_AFFAIRS'],
             ['name' => 'SALES'],
             ['name' => 'ENGINEERING'],
+            ['name' => 'ALL'],
         ]);
     }
 }

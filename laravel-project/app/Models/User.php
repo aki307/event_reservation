@@ -66,4 +66,8 @@ class User extends Authenticatable
     {
         return $this->user_type_id == 1; // generalユーザー
     }
+
+    public function events(){
+        return $this->hasMany(Event::class);
+    }
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\EventsController;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -23,7 +24,7 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::get('/', function () {
-    return Auth::check() ? redirect('/events/index') : redirect('/login');
+    return Auth::check() ? redirect('/events/today') : redirect('/login');
 });
 
 Route::middleware('auth')->group(function () {
@@ -34,17 +35,23 @@ Route::middleware('auth')->group(function () {
     Route::get('/logout', function () {
         return view('logout');
     })->name('logout');
-    Route::get('/events/index', function () {
-        return view('events.index');
-    });
     Route::get('users', [UsersController::class, 'index'])->name('users.index');
-    Route::get('users/{user}', [UsersController::class, 'show'])->name('users.show');
+    Route::get('users/{user}', [UsersController::class, 'show'])->where('user', '[0-9]+')->name('users.show');
+    Route::get('/events/today', [EventsController::class, 'todaysEvents'])->name('events.today');
+    
+    Route::get('events/{event}', [EventsController::class, 'show'])->where('event', '[0-9]+')->name('events.show');
+    Route::post('events', [EventsController::class, 'store'])->name('events.store');
+    Route::get('events/{event}/edit', [EventsController::class, 'edit'])->where('event', '[0-9]+')->name('events.edit');
+    Route::resource('events', EventsController::class)->only(['index', 'create','update', 'destroy']);
+    
 });
 // adminユーザーのみがアクセス可能なルート
 Route::middleware('admin')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
-    Route::post('register', [RegisteredUserController::class, 'store']);
+
     Route::resource('users', UsersController::class)->only(['edit', 'update', 'destroy']);
 });
 require __DIR__ . '/auth.php';
+
+Route::get('register', [RegisteredUserController::class, 'create'])
+    ->name('register');
+Route::post('register', [RegisteredUserController::class, 'store']);
