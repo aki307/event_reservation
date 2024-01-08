@@ -1,8 +1,9 @@
+
 @extends('layouts.app')
 
 @section('content')
 <div class="text-left">
-    <h1>イベント一覧</h1>
+    <h1>本日のイベント</h1>
 </div>
 @if (count($events) > 0)
 {{ $events->links('pagination::bootstrap-4') }}
@@ -23,7 +24,7 @@
             <td>{{ \Carbon\Carbon::parse($event->start_date_and_time)->format('Y年m月d日') }}({{ \Carbon\Carbon::parse($event->start_date_and_time)->locale('ja')->isoFormat('ddd') }}) {{ \Carbon\Carbon::parse($event->start_date_and_time)->format('H時i分') }}</td>
             <td>{{ $event->location }}</td>
             <td>
-                {{ config('groups.types.' .$groups->firstWhere('id', $event->group_id)->name ) }}
+                {{ config('group.types.' .$groups->firstWhere('id', $event->group_id)->name ) }}
             </td>
             <td>
                 <a href="{{ route('events.show', ['event' => $event->id]) }}" class="btn btn-outline-dark">詳細</a>
@@ -35,7 +36,4 @@
 @else
 <p>本日の開始のイベントはありません</p>
 @endif
-<div class="flex items-center justify-end mt-4">
-    <a class="btn btn-primary btn-block" href="{{ route('events.create') }}">イベントの登録</a>
-</div>
 @endsection
