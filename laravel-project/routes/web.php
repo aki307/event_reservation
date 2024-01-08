@@ -31,23 +31,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/registration-completed', function () {
         return view('users.registration-completed');
     })->name('registration.completed');
-
     Route::get('/logout', function () {
         return view('logout');
     })->name('logout');
-    Route::get('users', [UsersController::class, 'index'])->name('users.index');
-    Route::get('users/{user}', [UsersController::class, 'show'])->where('user', '[0-9]+')->name('users.show');
-    Route::get('/events/today', [EventsController::class, 'todaysEvents'])->name('events.today');
-    
-    Route::get('events/{event}', [EventsController::class, 'show'])->where('event', '[0-9]+')->name('events.show');
-    Route::post('events', [EventsController::class, 'store'])->name('events.store');
-    Route::get('events/{event}/edit', [EventsController::class, 'edit'])->where('event', '[0-9]+')->name('events.edit');
-    Route::resource('events', EventsController::class)->only(['index', 'create','update', 'destroy']);
-    
+
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UsersController::class, 'index'])->name('users.index');
+        Route::get('/{user}', [UsersController::class, 'show'])->where('user', '[0-9]+')->name('users.show');
+    });
+
+    Route::prefix('events')->group(function () {
+        Route::get('/today', [EventsController::class, 'todaysEvents'])->name('events.today');
+        Route::get('/{event}', [EventsController::class, 'show'])->where('event', '[0-9]+')->name('events.show');
+        Route::get('events/create', [EventsController::class, 'create'])->name('events.create');
+        Route::post('/', [EventsController::class, 'store'])->name('events.store');
+        Route::get('/{event}/edit', [EventsController::class, 'edit'])->where('event', '[0-9]+')->name('events.edit');
+        Route::resource('/', EventsController::class)->only(['index','update', 'destroy']);
+    });
 });
 // adminユーザーのみがアクセス可能なルート
 Route::middleware('admin')->group(function () {
-
     Route::resource('users', UsersController::class)->only(['edit', 'update', 'destroy']);
 });
 require __DIR__ . '/auth.php';

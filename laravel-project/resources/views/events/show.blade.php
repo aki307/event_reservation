@@ -47,7 +47,6 @@
             @method('DELETE')
         </form>
         @endif
-        <!-- ここまで -->
     </div>
 </div>
 @endsection

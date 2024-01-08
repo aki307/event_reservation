@@ -12,7 +12,7 @@ use App\Services\GroupService;
 use Illuminate\Support\Facades\Auth;
 
 class EventsController extends Controller
-{   
+{
     protected $eventService;
     protected $groupService;
 
@@ -22,14 +22,15 @@ class EventsController extends Controller
         $this->groupService = $groupService;
     }
 
-    public function create(){
-        $groups = DB::table('groups')->get();
-        
-        return view('events.create', [ 'groups' => $groups]);
+    public function create()
+    {
+        $groups = $this->groupService->getAllGroups();
+        return view('events.create', ['groups' => $groups]);
     }
 
-    public function store(CreateEventRequest $request){
-       
+    public function store(CreateEventRequest $request)
+    {
+
         $user_id = Auth::id();
         try {
             $event = $this->eventService->createEvent($request, $user_id);
@@ -43,17 +44,19 @@ class EventsController extends Controller
     {
         $events = $this->eventService->getTodaysEvents();
         $groups = $this->groupService->getAllGroups();
-        
+
         return view('events.todays_event', ['events' => $events, 'groups' => $groups]);
     }
 
-    public function index(){
+    public function index()
+    {
         $events = $this->eventService->getAllEvents();
         $groups = $this->groupService->getAllGroups();
         return view('events.index', compact('events', 'groups'));
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $event = $this->eventService->getEventById($id);
         $groups = $this->groupService->getAllGroups();
 

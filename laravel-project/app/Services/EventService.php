@@ -27,7 +27,12 @@ class EventService
     public function getTodaysEvents()
     {
         $today = Carbon::today();
-        $events = Event::whereDate('start_date_and_time', $today)->paginate(5);
+        $events = Event::where('start_date_and_time', '<=', $today)
+            ->where(function ($query) use ($today) {
+                $query->where('end_date_and_time', '>=', $today)
+                    ->orWhereNull('end_date_and_time');
+            })
+            ->paginate(5);
         return $events;
     }
 
@@ -36,7 +41,8 @@ class EventService
         $events = Event::orderBy('id', 'desc')->paginate(5);
         return $events;
     }
-    public function getEventById($id){
+    public function getEventById($id)
+    {
         return Event::find($id);
     }
 
@@ -50,7 +56,7 @@ class EventService
         }
         $event->fill($data);
         $event->save();
-        
+
 
         return $event;
     }
@@ -70,9 +76,9 @@ class EventService
         $userId = Auth::id();
         $event = Event::findOrFail($id);
         if ($event->user_id != $userId) {
-            
+
             abort(403, '主催者本人でないと削除できません');
         }
-        $event->delete(); 
+        $event->delete();
     }
 }
