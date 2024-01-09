@@ -10,16 +10,19 @@ use Illuminate\Support\Facades\Config;
 use App\Services\EventService;
 use App\Services\GroupService;
 use Illuminate\Support\Facades\Auth;
+use App\Services\AttendanceService;
 
 class EventsController extends Controller
 {
     protected $eventService;
     protected $groupService;
+    protected $attendanceService;
 
-    public function __construct(EventService $eventService, GroupService $groupService)
+    public function __construct(EventService $eventService, GroupService $groupService,AttendanceService $attendanceService )
     {
         $this->eventService = $eventService;
         $this->groupService = $groupService;
+        $this->attendanceService = $attendanceService;
     }
 
     public function create()
@@ -55,12 +58,16 @@ class EventsController extends Controller
         return view('events.index', compact('events', 'groups'));
     }
 
-    public function show($id)
+    public function show($id, AttendanceService $attendanceService)
     {
         $event = $this->eventService->getEventById($id);
         $groups = $this->groupService->getAllGroups();
-
-        return view('events.show', compact('event', 'groups'));
+        $userAttendance = $attendanceService->checkExistingAttendance(Auth::id(), $id);
+        $attendees = $event->attendances()->with('user')->get()->map(function ($attendance) {
+            return $attendance->user;
+        });
+       
+        return view('events.show', compact('event', 'groups', 'userAttendance', 'attendees'));
     }
 
     public function edit($id)

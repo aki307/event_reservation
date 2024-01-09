@@ -31,12 +31,18 @@
             </tr>
             <tr>
                 <th scope="row">参加者</th>
-                <td>※未実装</td>
+                <td>@if($attendees->isNotEmpty())
+                    {{ $attendees->pluck('user_name')->join(', ') }}
+                    @else
+                    参加者はいません。
+                    @endif
+                </td>
             </tr>
         </tbody>
     </table>
     <div class="flex items-center justify-end mt-4">
-        <a href="{{ route('events.index')}}" class="btn btn-primary">一覧に戻る</a>
+        <a href="{{ route('events.index')}}" class="btn btn-primary mr-2">一覧に戻る</a>
+        @include('attend_event.attend_button', ['event' => $event])
         <!-- 登録者本人の場合の表示 -->
         @if(Auth::check() && Auth::id() == $event->user_id)
         <a href="{{ route('events.edit', ['event' => $event->id]) }}" class="btn btn-outline-dark">編集</a>

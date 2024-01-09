@@ -24,7 +24,7 @@
             <td>{{ \Carbon\Carbon::parse($event->start_date_and_time)->format('Y年m月d日') }}({{ \Carbon\Carbon::parse($event->start_date_and_time)->locale('ja')->isoFormat('ddd') }}) {{ \Carbon\Carbon::parse($event->start_date_and_time)->format('H時i分') }}</td>
             <td>{{ $event->location }}</td>
             <td>
-                {{ config('group.types.' .$groups->firstWhere('id', $event->group_id)->name ) }}
+                {{ config('groups.types.' .$groups->firstWhere('id', $event->group_id)->name ) }}
             </td>
             <td>
                 <a href="{{ route('events.show', ['event' => $event->id]) }}" class="btn btn-outline-dark">詳細</a>
