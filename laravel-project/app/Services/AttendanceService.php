@@ -42,4 +42,11 @@ class AttendanceService
         $attendance->delete();
         return true;
     }
+
+    public function getUserAttendances()
+    {
+        $userId = Auth::id();
+        $userAttendances = Attendance::where('user_id', $userId)->pluck('event_id')->toArray();
+        return $userAttendances;
+    }
 }

@@ -7,7 +7,7 @@
         <tbody>
             <tr>
                 <th scope="row">タイトル</th>
-                <td>{{ $event->title }}</td>
+                <td>{{ $event->title }} @include('attend_event.attend_tag', ['event' => $event])</td>
             </tr>
             <tr>
                 <th scope="row">開始日時</th>

@@ -8,11 +8,6 @@ use App\Http\Controllers\EventsController;
 use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Auth;
 
-
-
-
-
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes

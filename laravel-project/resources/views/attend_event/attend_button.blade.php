@@ -1,18 +1,18 @@
 @if(Auth::check())
 @if($userAttendance)
-<form id="delete" action="{{ route('events.unattend', ['event' => $event->id]) }}" method="POST">
-    @csrf
-    @method('DELETE')
-    <x-primary-button class="btn btn-primary btn-block">
+    <form id="unattend-form" action="{{ route('events.unattend', ['event' => $event->id]) }}" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+    <button type="button" class="btn btn-warning" onclick="document.getElementById('unattend-form').submit();">
         {{ __('参加を取り消す') }}
-    </x-primary-button>
-</form>
+    </button>
 @else
-<form method="POST" action="{{ route('events.attend', ['event' => $event->id]) }}">
-    @csrf
-    <x-primary-button class="btn btn-primary btn-block">
+    <form id="attend-form" action="{{ route('events.attend', ['event' => $event->id]) }}" method="POST" style="display: none;">
+        @csrf
+    </form>
+    <button type="button" class="btn btn-info" onclick="document.getElementById('attend-form').submit();">
         {{ __('参加する') }}
-    </x-primary-button>
-</form>
+    </button>
 @endif
 @endif

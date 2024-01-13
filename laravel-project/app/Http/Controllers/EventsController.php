@@ -47,15 +47,17 @@ class EventsController extends Controller
     {
         $events = $this->eventService->getTodaysEvents();
         $groups = $this->groupService->getAllGroups();
+        $userAttendances = $this->attendanceService->getUserAttendances();
 
-        return view('events.todays_event', ['events' => $events, 'groups' => $groups]);
+        return view('events.todays_event', ['events' => $events, 'groups' => $groups, 'userAttendance' => $userAttendances]);
     }
 
     public function index()
     {
         $events = $this->eventService->getAllEvents();
         $groups = $this->groupService->getAllGroups();
-        return view('events.index', compact('events', 'groups'));
+        $userAttendance = $this->attendanceService->getUserAttendances();
+        return view('events.index', compact('events', 'groups', 'userAttendance'));
     }
 
     public function show($id, AttendanceService $attendanceService)
