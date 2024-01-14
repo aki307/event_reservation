@@ -43,7 +43,8 @@ Route::middleware('auth')->group(function () {
         Route::get('events/create', [EventsController::class, 'create'])->name('events.create');
         Route::post('/', [EventsController::class, 'store'])->name('events.store');
         Route::get('/{event}/edit', [EventsController::class, 'edit'])->where('event', '[0-9]+')->name('events.edit');
-        Route::resource('events', EventsController::class)->only(['update', 'destroy']);
+        Route::put('events/{event}', [EventsController::class, 'update'])->name('events.update');
+        Route::delete('events/{event}', [EventsController::class, 'destroy'])->name('events.destroy');
         Route::post('/{event}/attend', [AttendanceController::class, 'store'])->name('events.attend');
         Route::delete('/{event}/unattend', [AttendanceController::class, 'destroy'])->name('events.unattend');
     });

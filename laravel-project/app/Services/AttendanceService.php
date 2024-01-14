@@ -18,8 +18,6 @@ class AttendanceService
         $attendance->user_id = $userId;
         $attendance->event_id = $eventId;
         $attendance->save();
-
-        return $attendance;
     }
 
     public function attendEvent($eventId)
@@ -29,7 +27,7 @@ class AttendanceService
             return false;
         }
         $this->createAttendance($userId, $eventId);
-        return true;
+        
     }
 
     public function unattendEvent($eventId)
@@ -40,7 +38,6 @@ class AttendanceService
             return false;
         }
         $attendance->delete();
-        return true;
     }
 
     public function getUserAttendances()
