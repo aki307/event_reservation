@@ -5,12 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventsController;
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Auth;
-
-
-
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -42,11 +38,15 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('events')->group(function () {
         Route::get('/today', [EventsController::class, 'todaysEvents'])->name('events.today');
+        Route::get('/', [EventsController::class, 'index'])->name('events.index');
         Route::get('/{event}', [EventsController::class, 'show'])->where('event', '[0-9]+')->name('events.show');
         Route::get('events/create', [EventsController::class, 'create'])->name('events.create');
         Route::post('/', [EventsController::class, 'store'])->name('events.store');
         Route::get('/{event}/edit', [EventsController::class, 'edit'])->where('event', '[0-9]+')->name('events.edit');
-        Route::resource('/', EventsController::class)->only(['index','update', 'destroy']);
+        Route::put('events/{event}', [EventsController::class, 'update'])->name('events.update');
+        Route::delete('events/{event}', [EventsController::class, 'destroy'])->name('events.destroy');
+        Route::post('/{event}/attend', [AttendanceController::class, 'store'])->name('events.attend');
+        Route::delete('/{event}/unattend', [AttendanceController::class, 'destroy'])->name('events.unattend');
     });
 });
 // adminユーザーのみがアクセス可能なルート
