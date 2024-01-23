@@ -24,7 +24,7 @@ class AttendanceService
     {
         $userId = Auth::id();
         if ($this->checkExistingAttendance($userId, $eventId)) {
-            return false;
+            throw new \Exception("既にイベント参加予定になっています");
         }
         $this->createAttendance($userId, $eventId);
         
@@ -35,7 +35,7 @@ class AttendanceService
         $userId = Auth::id();
         $attendance = $this->checkExistingAttendance($userId, $eventId);
         if (!$attendance) {
-            return false;
+            throw new \Exception("既にイベント不参加になっています");
         }
         $attendance->delete();
     }

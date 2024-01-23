@@ -43,7 +43,7 @@ class EventService
     }
     public function getEventById($id)
     {
-        return Event::find($id);
+        return Event::findOrFail($id);
     }
 
     public function updateEvent($data, $id)

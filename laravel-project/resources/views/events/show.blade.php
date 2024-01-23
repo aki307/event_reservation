@@ -2,7 +2,12 @@
 
 @section('content')
 <div class="container mt-5">
-    <h1 class="mb-4">イベント詳細</h1>
+    <h1>イベント詳細</h1>
+    <a href="javascript:void(0);" id="favorite-link" data-event="{{ $event->id }}" style="text-decoration:none;">
+        <i class="fa-solid fa-star" style="font-size:22px; color: {{ $event->favoritedByUsers->contains(Auth::id()) ? '#f1bf2a' : '#82888e' }};"></i>
+        <span id="favorites-count" style="color: #82888e; text-decoration:none;">{{ $event->favoritesCount() }}</span>
+    </a>
+    <p class="view-count">閲覧数: {{ $event->views->views_count ?? 0 }}</p>
     <table class="table">
         <tbody>
             <tr>
@@ -55,4 +60,33 @@
         @endif
     </div>
 </div>
+<script>
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    document.addEventListener('DOMContentLoaded', function () {
+    var link = document.getElementById('favorite-link');
+    var countSpan = document.getElementById('favorites-count'); 
+    if (link) {
+        link.addEventListener('click', function() {
+            var eventId = this.getAttribute('data-event');
+            axios.post('/favorite/' + eventId)
+                .then(function (response) {
+                    var icon = link.querySelector('.fa-star');
+                    if (response.data.favorited) {
+                        // お気に入りに追加された
+                        icon.style.color = '#f1bf2a'; // ゴールド色
+                    } else {
+                        // お気に入りから解除された
+                        icon.style.color = '#82888e'; // グレー色
+                    }
+                    countSpan.textContent = response.data.favoritesCount;
+                })
+                .catch(function (error) {
+                    console.error(error.response.data);
+                });
+        });
+    }
+});
+
+
+</script>
 @endsection

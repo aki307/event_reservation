@@ -1,22 +1,105 @@
-
-
 #navbar-menu.active {
-    display: block;
+  display: block;
 }
 
 .form-control::placeholder {
-    color: #cccccc;
+  color: #cccccc;
 }
 
-.dark:text-gray-300{
-    font-weight: bold;
+.dark:text-gray-300 {
+  font-weight: bold;
 }
+
 label {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .navbar-nav .nav-link.active {
-    background-color: #6c757d; /* Adjust the color to match the provided screenshot */
-    color: white;
+  background-color: #6c757d;
+  /* Adjust the color to match the provided screenshot */
+  color: black;
 }
 
+#navbar-menu.active {
+  display: block;
+}
+
+.form-control::placeholder {
+  color: #cccccc;
+}
+
+.dark:text-gray-300 {
+  font-weight: bold;
+}
+
+label {
+  font-weight: 600;
+}
+
+.navbar-nav .nav-link.active {
+  background-color: #e7e7e7;
+
+}
+
+.navbar {
+  padding: 0;
+}
+
+
+
+.navbar-light {
+  background-color: #f8f8f8;
+}
+
+.nav-link {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.page-link.active,
+.active>.page-link {
+
+  background-color: #268bd0;
+
+}
+
+.page-link {
+  color: #268bd0;
+}
+
+.btn-primary {
+  --bs-btn-bg: #268bd0;
+  --bs-btn-border-color: #268bd0;
+}
+
+.btn-info {
+  color: white;
+}
+
+.btn-warning {
+  color: white;
+}
+
+.birthday-year {
+  width: 4em;
+  display: inline-block;
+}
+
+.birthday-month {
+  width: 3em;
+  display: inline-block;
+}
+
+.birthday-day {
+  width: 3em;
+  display: inline-block;
+}
+
+.view-count {
+  color: #268bd0;
+  font-size: 22px;
+}
+
+.view-index-count {
+  color: #808080;
+}

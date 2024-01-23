@@ -13,10 +13,17 @@ use Illuminate\Support\Facades\Auth;
 class UserService
 {
 
-    public function getAllUsers()
+    public function getAllUsers($ageSort)
     {
-        $users = User::orderBy('id', 'desc')->paginate(5);
-        return $users;
+        
+        $query = User::orderBy('id', 'desc');
+    
+    if ($ageSort === 'asc') {
+        $query = User::orderBy('dob', 'asc');
+    } elseif ($ageSort === 'desc') {
+        $query =User::orderBy('dob', 'desc');
+    }
+        return $query->paginate(5);
     }
 
     public function getUserById($id)

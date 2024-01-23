@@ -12,13 +12,16 @@
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link {{ Request::is('today-events') ? 'active' : '' }}" href="{{ url('/events/today') }}">本日のイベント</a>
+                        <!-- 本日のイベント -->
+                        <a class="nav-link {{ Request::is('events/today') ? 'active' : '' }}" href="{{ url('/events/today') }}">本日のイベント</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ Request::is('event-management') ? 'active' : '' }}" href="{{ url('/events/') }}">イベント管理</a>
+                        <!-- イベント管理 -->
+                        <a class="nav-link {{ Request::is('events', 'events/*') && !Request::is('events/today') ? 'active' : '' }}" href="{{ url('/events/') }}">イベント管理</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active {{ Request::is('user-management') ? 'active' : '' }}" href="{{ url('/users/') }}">ユーザ管理</a>
+                        <!-- ユーザ管理 -->
+                        <a class="nav-link {{ Request::is('users', 'users/*') ? 'active' : '' }}" href="{{ url('/users/') }}">ユーザ管理</a>
                     </li>
                 </ul>
 

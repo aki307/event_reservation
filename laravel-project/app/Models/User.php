@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -22,7 +23,12 @@ class User extends Authenticatable
         'password',
         'user_name',
         'user_type_id',
-        'group_id'
+        'group_id',
+        'gender',
+        'dob',
+        'google_account',
+        'email',
+        'google_token'
     ];
 
     /**
@@ -74,5 +80,15 @@ class User extends Authenticatable
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    public function getAgeAttribute()
+    {
+        return $this->dob ? Carbon::parse($this->dob)->age : null;
+    }
+
+    public function favoriteEvents()
+    {
+        return $this->belongsToMany(Event::class, 'favorite_events');
     }
 }

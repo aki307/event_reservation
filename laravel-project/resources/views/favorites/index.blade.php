@@ -2,10 +2,9 @@
 
 @section('content')
 <div class="text-left">
-    <h1>イベント一覧</h1>
+    <h1>お気に入りイベント</h1>
 </div>
 @if (count($events) > 0)
-{{ $events->links('pagination::bootstrap-4') }}
 <table class="table table-bordered">
     <thead class="thead-dark">
         <tr>
@@ -21,9 +20,9 @@
         <tr>
             <th scope="row">{{ $event->title }} @if(in_array($event->id, $userAttendance))
                 @include('attend_event.attend_tag')
-            @endif
-            <p class="view-index-count">閲覧数: {{ $event->views->views_count ?? 0 }}</p>
-        </th>
+                @endif
+                <p class="view-index-count">閲覧数: {{ $event->views->views_count ?? 0 }}</p>
+            </th>
             <td>{{ \Carbon\Carbon::parse($event->start_date_and_time)->format('Y年m月d日') }}({{ \Carbon\Carbon::parse($event->start_date_and_time)->locale('ja')->isoFormat('ddd') }}) {{ \Carbon\Carbon::parse($event->start_date_and_time)->format('H時i分') }}</td>
             <td>{{ $event->location }}</td>
             <td>
@@ -37,9 +36,6 @@
     </tbody>
 </table>
 @else
-<p>本日の開始のイベントはありません</p>
+<p>お気に入りのイベントはありません</p>
 @endif
-<div class="flex items-center justify-end mt-4">
-    <a class="btn btn-primary btn-block" href="{{ route('events.create') }}">イベントの登録</a>
-</div>
 @endsection

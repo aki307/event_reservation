@@ -7,6 +7,7 @@ use App\Services\UserService;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use App\Services\GroupService;
+use Illuminate\Support\Facades\Log;
 
 
 class UsersController extends Controller
@@ -20,12 +21,14 @@ class UsersController extends Controller
         $this->groupService = $groupService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $users = $this->userService->getAllUsers();
+        $ageSort = $request->query('age_sort', 'none');
+        
+        $users = $this->userService->getAllUsers($ageSort);
         $groups = $this->groupService->getAllGroups();
 
-        return view('users.index', compact('users', 'groups'));
+        return view('users.index', compact('users', 'groups', 'ageSort'));
     }
 
     public function show($id)
@@ -51,14 +54,19 @@ class UsersController extends Controller
             $user = $this->userService->updateUser($request->validated(), $id);
             return redirect()->route('users.show', ['user' => $user->id]);
         } catch (\Exception $e) {
+            Log::error("User update failed: " . $e->getMessage(), ['user_id' => $id]);
             return redirect()->back()->withErrors(['custom_error' => $e->getMessage()])->withInput();
         }
     }
 
     public function destroy($id)
     {
-        $this->userService->deleteUser($id);
-
-        return redirect()->route('users.index');
+        try {
+            $this->userService->deleteUser($id);
+            return redirect()->route('users.index');
+        } catch (\Exception $e) {
+            Log::error("User deletion failed: " . $e->getMessage(), ['user_id' => $id]);
+            return redirect()->back()->withErrors(['custom_error' => $e->getMessage()]);
+        }
     }
 }

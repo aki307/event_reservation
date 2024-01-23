@@ -6,7 +6,9 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\FavoriteController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,12 +32,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/logout', function () {
         return view('logout');
     })->name('logout');
-
     Route::prefix('users')->group(function () {
         Route::get('/', [UsersController::class, 'index'])->name('users.index');
         Route::get('/{user}', [UsersController::class, 'show'])->where('user', '[0-9]+')->name('users.show');
     });
-
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index')->middleware('auth');
+    Route::post('/favorite/{event}', [FavoriteController::class, 'store'])->name('events.favorite');
     Route::prefix('events')->group(function () {
         Route::get('/today', [EventsController::class, 'todaysEvents'])->name('events.today');
         Route::get('/', [EventsController::class, 'index'])->name('events.index');
@@ -47,6 +49,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('events/{event}', [EventsController::class, 'destroy'])->name('events.destroy');
         Route::post('/{event}/attend', [AttendanceController::class, 'store'])->name('events.attend');
         Route::delete('/{event}/unattend', [AttendanceController::class, 'destroy'])->name('events.unattend');
+
     });
 });
 // adminユーザーのみがアクセス可能なルート
@@ -58,3 +61,6 @@ require __DIR__ . '/auth.php';
 Route::get('register', [RegisteredUserController::class, 'create'])
     ->name('register');
 Route::post('register', [RegisteredUserController::class, 'store']);
+
+Route::get('login/google', [AuthenticatedSessionController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('login/google/callback', [AuthenticatedSessionController::class, 'handleGoogleCallback']);
