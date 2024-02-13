@@ -56,9 +56,33 @@
         </select>
         <x-input-error :messages="$errors->get('group_id')" class="mt-2" />
       </div>
+      <!-- 性別選択(必須) -->
+      <div class="mt-4">
+        <x-input-label for="gender" :value="__('性別(必須)')" />
+        <select name="gender" id="gender" class="form-control" required>
+          <option value="">{{ __('選択してください') }}</option>
+          <!-- genderパーツ -->
+          @foreach(config('gender.types') as $key => $value)
+          <option value="{{ $key }}">{{ $value }}</option>
+          @endforeach
+        </select>
+        <x-input-error :messages="$errors->get('gender')" class="mt-2" />
+      </div>
+      <!-- 生年月日(任意) -->
+      <div class="mt-4">
+        <x-input-label for="groups_id" :value="__('生年月日(任意)')" />
+        <div class="row">
+          <div class="col-xs-2">
+            <x-text-input class="form-control  birthday-year" id="year" placeholder="1980" maxlength="4" /> /
+            <x-text-input class="form-control birthday-month" id="month" placeholder="01" maxlength="2" /> /
+            <x-text-input class="form-control birthday-day" id="day" placeholder="02" maxlength="2" />
+            <x-text-input class="form-control" type="hidden" id="dob" name="dob" />
+            <p id="date-error" style="color: red; display: none;">無効な日付です。</p>
+          </div>
+        </div>
+      </div>
       <div class="flex items-center justify-end mt-4">
         <a class="btn btn-light btn-block " href="{{ route('users.index')}}">キャンセル</a>
-
         <x-primary-button class="btn btn-primary btn-block">
           {{ __('登録') }}
         </x-primary-button>

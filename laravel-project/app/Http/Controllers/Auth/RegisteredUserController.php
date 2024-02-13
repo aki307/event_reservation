@@ -19,13 +19,13 @@ use Illuminate\Support\Facades\Config;
 
 class RegisteredUserController extends Controller
 {
-    
+
     /**
      * Display the registration view.
      */
     public function create()
     {
-        
+
         $userTypes = DB::table('user_types')->get();
         $groups = DB::table('groups')->get();
         $study = Config::get('category.$language');
@@ -43,9 +43,10 @@ class RegisteredUserController extends Controller
             'login_id' => ['required', 'string', 'min:6', 'max:22', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'user_name' => ['required', 'string', 'min:6', 'max:40'],
-            'user_type_id' => ['required', 'exists:user_types,id'], // user_typesテーブルのidカラムに存在するかチェック
-            'group_id' => ['required', 'exists:groups,id'], // groupsテーブルのidカラムに存在するかチェック
-
+            'user_type_id' => ['required', 'exists:user_types,id'], 
+            'group_id' => ['required', 'exists:groups,id'], 
+            'gender' => 'required|in:' . implode(',', array_keys(config('gender.types'))),
+            'dob' => 'nullable|date|before:today',
         ]);
 
         $user = User::create([
@@ -55,6 +56,8 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'user_type_id' => $request->user_type_id,
             'group_id' => $request->group_id,
+            'gender' => $request->gender,
+            'dob' => $request->dob,
         ]);
 
         event(new Registered($user));

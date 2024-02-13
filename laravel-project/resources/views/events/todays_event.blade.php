@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('content')
@@ -22,7 +21,9 @@
         <tr>
             <th scope="row">{{ $event->title }} @if(in_array($event->id, $userAttendance))
                 @include('attend_event.attend_tag')
-            @endif</th>
+                @endif
+                <p class="view-index-count">閲覧数: {{ $event->views->views_count ?? 0 }}</p>
+            </th>
             <td>{{ \Carbon\Carbon::parse($event->start_date_and_time)->format('Y年m月d日') }}({{ \Carbon\Carbon::parse($event->start_date_and_time)->locale('ja')->isoFormat('ddd') }}) {{ \Carbon\Carbon::parse($event->start_date_and_time)->format('H時i分') }}</td>
             <td>{{ $event->location }}</td>
             <td>

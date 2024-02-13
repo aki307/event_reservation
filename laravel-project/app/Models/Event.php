@@ -9,7 +9,7 @@ class Event extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'start_date_and_time','end_date_and_time','location','description', 'user_id','group_id'];
+    protected $fillable = ['title', 'start_date_and_time', 'end_date_and_time', 'location', 'description', 'user_id', 'group_id'];
 
     public function user()
     {
@@ -21,5 +21,23 @@ class Event extends Model
         return $this->hasMany(Attendance::class);
     }
 
-    
+    public function views()
+    {
+        return $this->hasOne(EventView::class);
+    }
+
+    public function favoritedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'favorite_events');
+    }
+
+    public function favoritesCount()
+    {
+        return $this->favoritedByUsers()->count();
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'event_id');
+    }
 }

@@ -11,18 +11,25 @@ use App\Services\EventService;
 use App\Services\GroupService;
 use Illuminate\Support\Facades\Auth;
 use App\Services\AttendanceService;
+use Illuminate\Support\Facades\Log;
+use App\Services\EventViewService;
+use App\Services\CommentService;
 
 class EventsController extends Controller
 {
     protected $eventService;
     protected $groupService;
     protected $attendanceService;
+    protected $eventViewService;
+    protected $commentService;
 
-    public function __construct(EventService $eventService, GroupService $groupService,AttendanceService $attendanceService )
+    public function __construct(EventService $eventService, GroupService $groupService, AttendanceService $attendanceService, EventViewService $eventViewService, CommentService $commentService)
     {
         $this->eventService = $eventService;
         $this->groupService = $groupService;
         $this->attendanceService = $attendanceService;
+        $this->eventViewService = $eventViewService;
+        $this->commentService = $commentService;
     }
 
     public function create()
@@ -39,6 +46,7 @@ class EventsController extends Controller
             $event = $this->eventService->createEvent($request, $user_id);
             return view('events.registerEventComplete');
         } catch (\Exception $e) {
+            Log::error("Event store failed: " . $e->getMessage(), ['user_id' => $user_id]);
             return redirect()->back()->withErrors(['custom_error' => $e->getMessage()])->withInput();
         }
     }
@@ -52,9 +60,9 @@ class EventsController extends Controller
         return view('events.todays_event', ['events' => $events, 'groups' => $groups, 'userAttendance' => $userAttendances]);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $events = $this->eventService->getAllEvents();
+        $events = $this->eventService->getAllEvents($request);
         $groups = $this->groupService->getAllGroups();
         $userAttendance = $this->attendanceService->getUserAttendances();
         return view('events.index', compact('events', 'groups', 'userAttendance'));
@@ -68,8 +76,12 @@ class EventsController extends Controller
         $attendees = $event->attendances()->with('user')->get()->map(function ($attendance) {
             return $attendance->user;
         });
-       
-        return view('events.show', compact('event', 'groups', 'userAttendance', 'attendees'));
+        $eventView = $this->eventViewService->findOrCreate($event);
+        $this->eventViewService->countView($eventView);
+
+        $comments=$event->comments()->get();
+
+        return view('events.show', compact('event', 'groups', 'userAttendance', 'attendees', 'comments'));
     }
 
     public function edit($id)
@@ -85,14 +97,19 @@ class EventsController extends Controller
             $event = $this->eventService->updateEvent($request->validated(), $id);
             return redirect()->route('events.show', ['event' => $event->id]);
         } catch (\Exception $e) {
+            Log::error("Event update failed: " . $e->getMessage(), ['event_id' => $id]);
             return redirect()->back()->withErrors(['custom_error' => $e->getMessage()])->withInput();
         }
     }
 
     public function destroy($id)
     {
-        $this->eventService->deleteEvent($id);
-
-        return redirect()->route('events.index');
+        try {
+            $this->eventService->deleteEvent($id);
+            return redirect()->route('events.index');
+        } catch (\Exception $e) {
+            Log::error("Event deletion failed: " . $e->getMessage(), ['event_id' => $id]);
+            return redirect()->back()->withErrors(['custom_error' => $e->getMessage()]);
+        }
     }
 }
