@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('email')->nullable()->unique(); 
-            $table->string('google_token')->nullable(); 
+        Schema::table('google_users', function (Blueprint $table) {
+            $table->dropColumn('token');
+            
+            $table->string('google_token')->nullable();
         });
     }
 
@@ -22,8 +23,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['email', 'google_token']);
+        Schema::table('google_users', function (Blueprint $table) {
+            $table->dropColumn('google_token');
+            $table->string('token');
         });
     }
 };

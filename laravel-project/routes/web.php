@@ -7,6 +7,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
@@ -49,7 +50,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('events/{event}', [EventsController::class, 'destroy'])->name('events.destroy');
         Route::post('/{event}/attend', [AttendanceController::class, 'store'])->name('events.attend');
         Route::delete('/{event}/unattend', [AttendanceController::class, 'destroy'])->name('events.unattend');
+        Route::post('/{event}/post', [CommentController::class, 'create'])->name('comment.post');
 
+        Route::put('comments/{comment}', [CommentController::class, 'update'])->name('comment.update');
+    });
+    Route::prefix('comments')->group(function () {
+        Route::get('/comments/{comment}/edit', [CommentController::class, 'edit'])->where('comment', '[0-9]+');
     });
 });
 // adminユーザーのみがアクセス可能なルート
@@ -64,3 +70,6 @@ Route::post('register', [RegisteredUserController::class, 'store']);
 
 Route::get('login/google', [AuthenticatedSessionController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('login/google/callback', [AuthenticatedSessionController::class, 'handleGoogleCallback']);
+
+Route::get('/comments/{comment}/edit', [CommentController::class, 'edit'])->where('comment', '[0-9]+');
+Route::get('/users/export', 'App\Http\Controllers\UsersController@exportCsv')->name('users.export');

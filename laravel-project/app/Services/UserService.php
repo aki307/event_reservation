@@ -13,17 +13,37 @@ use Illuminate\Support\Facades\Auth;
 class UserService
 {
 
-    public function getAllUsers($ageSort)
+    public function getAllUsers($request)
     {
-        
-        $query = User::orderBy('id', 'desc');
-    
-    if ($ageSort === 'asc') {
-        $query = User::orderBy('dob', 'asc');
-    } elseif ($ageSort === 'desc') {
-        $query =User::orderBy('dob', 'desc');
-    }
-        return $query->paginate(5);
+
+        $users = User::query();
+        $searchTerm = $request->query('search');
+        if (!empty($searchTerm)) {
+            $users = $users->where('user_name', 'LIKE', '%' . $searchTerm . '%');
+        }
+
+        $ageSort = $request->age_sort;
+        if ($ageSort === 'asc') {
+            $users = $users->orderBy('dob', 'asc');
+        } elseif ($ageSort === 'desc') {
+            $users = $users->orderBy('dob', 'desc');
+        }
+
+        $genderSort = $request->gender;
+        if (!empty($genderSort)) {
+            $users = $users->where('gender', $genderSort);
+        }
+
+        $groupSort = $request->group_ids;
+        if (!empty($groupSort) && is_array($groupSort)) {
+            $users = $users->where('group_id', $groupSort);
+        }
+
+        if (empty($searchTerm) && empty($ageSort) && empty($genderSort) && empty($groupSort)) {
+            $users = $users->orderBy('id');
+        }
+        $users = $users->paginate(5);
+        return $users;
     }
 
     public function getUserById($id)

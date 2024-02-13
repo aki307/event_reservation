@@ -36,9 +36,23 @@ class EventService
         return $events;
     }
 
-    public function getAllEvents()
-    {
-        $events = Event::orderBy('id', 'desc')->paginate(5);
+    public function getAllEvents($request)
+    {   
+
+        $events = Event::query();
+        $titleTerm = $request->query('title');
+        if(!empty($titleTerm)) {
+            $events = $events->where('title', 'LIKE', '%' . $titleTerm . '%');
+        }
+        $descriptionTerm = $request->query('description');
+        if(!empty($descriptionTerm)) {
+            $events = $events->where('title', 'LIKE', '%' . $descriptionTerm . '%');
+        }
+        if (empty($titleTerm) && empty($descriptionTerm) ) {
+            $events = Event::orderBy('id', 'desc')->paginate(5);
+        }else {
+            $events = $events->paginate(5);
+        }
         return $events;
     }
     public function getEventById($id)

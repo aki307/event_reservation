@@ -32,7 +32,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['group_id_foreign']); // group_idに対する外部キー制約の名前を確認してください。
+            $table->dropForeign(['group_id_foreign']); 
             $table->dropColumn(['login_id', 'password', 'group_id', 'gender']);
         });
 

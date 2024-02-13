@@ -4,7 +4,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     // 削除ボタン
     const deleteUserButton = document.getElementById('deleteUserButton');
     if (deleteUserButton) {
-        deleteUserButton.addEventListener('click', function(event) {
+        deleteUserButton.addEventListener('click', function (event) {
             event.preventDefault();
             if (confirm('本当に削除してよろしいですか？')) {
                 document.getElementById('delete-form').submit();
@@ -40,3 +40,15 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('day').addEventListener('change', updateDOB);
 });
 
+// ユーザー一覧の詳細検索ドロップダウン
+document.addEventListener('DOMContentLoaded', function () {
+    window.toggleSearchForm = function() {
+        var form = document.getElementById("detailedSearchForm");
+        if (form.style.display === "none") {
+            form.style.display = "block";
+        } else {
+            form.style.display = "none";
+        }
+    };
+
+});

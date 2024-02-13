@@ -60,33 +60,67 @@
         @endif
     </div>
 </div>
+<div class="container mt-5">
+    <h3>コメント一覧</h3>
+
+    {{-- コメント入力フォーム --}}
+    <form action="{{ route('comment.post', ['event' => $event->id]) }}" method="POST">
+        @csrf
+        <div class="form-group">
+            <textarea class="form-control" id="comment" name="comment" rows="3" placeholder="ここにコメントを入力"></textarea>
+        </div>
+        <div class="flex items-center justify-end mt-4">
+            <button type="submit" class="btn btn-primary">コメントを投稿</button>
+        </div>
+    </form>
+
+    @if($comments)
+    @if($comments->isNotEmpty())
+    <div class="list-group mt-3">
+        @foreach ($comments as $comment)
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ $comment->user->user_name }}さん</h5>
+                @if (auth()->user()->id == $comment->user_id)
+                <!-- 編集ボタン -->
+                <small><a href="/comments/{{ $comment->id }}/edit" class="btn btn-sm btn-outline-secondary">編集</a></small>
+                @endif
+            </div>
+            <p class="mb-1">{{ $comment->comment }}</p>
+        </div>
+        @endforeach
+    </div>
+    @else
+    <p>コメントはありません。</p>
+    @endif
+    @endif
+</div>
+
 <script>
     axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    document.addEventListener('DOMContentLoaded', function () {
-    var link = document.getElementById('favorite-link');
-    var countSpan = document.getElementById('favorites-count'); 
-    if (link) {
-        link.addEventListener('click', function() {
-            var eventId = this.getAttribute('data-event');
-            axios.post('/favorite/' + eventId)
-                .then(function (response) {
-                    var icon = link.querySelector('.fa-star');
-                    if (response.data.favorited) {
-                        // お気に入りに追加された
-                        icon.style.color = '#f1bf2a'; // ゴールド色
-                    } else {
-                        // お気に入りから解除された
-                        icon.style.color = '#82888e'; // グレー色
-                    }
-                    countSpan.textContent = response.data.favoritesCount;
-                })
-                .catch(function (error) {
-                    console.error(error.response.data);
-                });
-        });
-    }
-});
-
-
+    document.addEventListener('DOMContentLoaded', function() {
+        var link = document.getElementById('favorite-link');
+        var countSpan = document.getElementById('favorites-count');
+        if (link) {
+            link.addEventListener('click', function() {
+                var eventId = this.getAttribute('data-event');
+                axios.post('/favorite/' + eventId)
+                    .then(function(response) {
+                        var icon = link.querySelector('.fa-star');
+                        if (response.data.favorited) {
+                            // お気に入りに追加された
+                            icon.style.color = '#f1bf2a'; // ゴールド色
+                        } else {
+                            // お気に入りから解除された
+                            icon.style.color = '#82888e'; // グレー色
+                        }
+                        countSpan.textContent = response.data.favoritesCount;
+                    })
+                    .catch(function(error) {
+                        console.error(error.response.data);
+                    });
+            });
+        }
+    });
 </script>
 @endsection

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\AttendanceService;
 use Illuminate\Support\Facades\Log;
 use App\Services\EventViewService;
+use App\Services\CommentService;
 
 class EventsController extends Controller
 {
@@ -20,13 +21,15 @@ class EventsController extends Controller
     protected $groupService;
     protected $attendanceService;
     protected $eventViewService;
+    protected $commentService;
 
-    public function __construct(EventService $eventService, GroupService $groupService, AttendanceService $attendanceService, EventViewService $eventViewService)
+    public function __construct(EventService $eventService, GroupService $groupService, AttendanceService $attendanceService, EventViewService $eventViewService, CommentService $commentService)
     {
         $this->eventService = $eventService;
         $this->groupService = $groupService;
         $this->attendanceService = $attendanceService;
         $this->eventViewService = $eventViewService;
+        $this->commentService = $commentService;
     }
 
     public function create()
@@ -57,9 +60,9 @@ class EventsController extends Controller
         return view('events.todays_event', ['events' => $events, 'groups' => $groups, 'userAttendance' => $userAttendances]);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $events = $this->eventService->getAllEvents();
+        $events = $this->eventService->getAllEvents($request);
         $groups = $this->groupService->getAllGroups();
         $userAttendance = $this->attendanceService->getUserAttendances();
         return view('events.index', compact('events', 'groups', 'userAttendance'));
@@ -76,7 +79,9 @@ class EventsController extends Controller
         $eventView = $this->eventViewService->findOrCreate($event);
         $this->eventViewService->countView($eventView);
 
-        return view('events.show', compact('event', 'groups', 'userAttendance', 'attendees'));
+        $comments=$event->comments()->get();
+
+        return view('events.show', compact('event', 'groups', 'userAttendance', 'attendees', 'comments'));
     }
 
     public function edit($id)

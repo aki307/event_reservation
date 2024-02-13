@@ -46,7 +46,6 @@
               </x-dropdown-link>
             </form>
           </x-slot>
-        </x-dropdown>
       </div>
       @else
 

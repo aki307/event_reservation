@@ -5,6 +5,29 @@
     <h1>イベント一覧</h1>
 </div>
 @if (count($events) > 0)
+<form action="{{ route('events.index') }}" method="GET" class="mb-4">
+    @csrf
+    @method('PUT')
+
+    <!-- イベント名-->
+    <div class="mt-4 form-group">
+        <x-input-label for="title" :value="__('イベント名で検索する')" />
+        <x-text-input id="title" class="form-control" type="text" name="title"  autofocus autocomplete="title" placeholder="イベント名" />
+        <x-input-error :messages="$errors->get('title')" class="mt-2" />
+    </div>
+    <!-- 詳細検索 -->
+    <div class="mt-4 form-group">
+        <x-input-label for="description" :value="__('詳細検索')" />
+        <x-text-input id="description" class="form-control" type="text" name="description"  autofocus autocomplete="description" placeholder="詳細" />
+        <x-input-error :messages="$errors->get('description')" class="mt-2" />
+    </div>
+
+    <div class="mt-4 form-group">
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">検索</button>
+        </div>
+    </div>
+</form>
 {{ $events->links('pagination::bootstrap-4') }}
 <table class="table table-bordered">
     <thead class="thead-dark">
@@ -21,9 +44,9 @@
         <tr>
             <th scope="row">{{ $event->title }} @if(in_array($event->id, $userAttendance))
                 @include('attend_event.attend_tag')
-            @endif
-            <p class="view-index-count">閲覧数: {{ $event->views->views_count ?? 0 }}</p>
-        </th>
+                @endif
+                <p class="view-index-count">閲覧数: {{ $event->views->views_count ?? 0 }}</p>
+            </th>
             <td>{{ \Carbon\Carbon::parse($event->start_date_and_time)->format('Y年m月d日') }}({{ \Carbon\Carbon::parse($event->start_date_and_time)->locale('ja')->isoFormat('ddd') }}) {{ \Carbon\Carbon::parse($event->start_date_and_time)->format('H時i分') }}</td>
             <td>{{ $event->location }}</td>
             <td>

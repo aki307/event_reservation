@@ -35,4 +35,9 @@ class Event extends Model
     {
         return $this->favoritedByUsers()->count();
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'event_id');
+    }
 }

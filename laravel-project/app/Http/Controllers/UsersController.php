@@ -8,7 +8,9 @@ use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use App\Services\GroupService;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\Response;
+use App\Models\Group;
+use App\Models\UserType;
 
 class UsersController extends Controller
 {
@@ -23,12 +25,10 @@ class UsersController extends Controller
 
     public function index(Request $request)
     {
-        $ageSort = $request->query('age_sort', 'none');
-        
-        $users = $this->userService->getAllUsers($ageSort);
-        $groups = $this->groupService->getAllGroups();
 
-        return view('users.index', compact('users', 'groups', 'ageSort'));
+        $users = $this->userService->getAllUsers($request);
+        $groups = $this->groupService->getAllPosts();
+        return view('users.index', compact('users', 'groups'));
     }
 
     public function show($id)
@@ -68,5 +68,52 @@ class UsersController extends Controller
             Log::error("User deletion failed: " . $e->getMessage(), ['user_id' => $id]);
             return redirect()->back()->withErrors(['custom_error' => $e->getMessage()]);
         }
+    }
+
+    public function exportCsv()
+    {
+        $fileName = 'users.csv';
+        $users = User::all();
+        $groups = Group::all();
+        $userTypes = UserType::all();
+
+        $headers = array(
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        );
+
+        $columns = ['ID', 'ユーザ名', '性別', '生年月日', '役職', 'ユーザタイプ', 'ログインID'];
+
+        $callback = function () use ($users, $columns, $groups, $userTypes) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($users as $user) {
+                $gender = config('gender.types.' . $user->gender);
+                $group = $groups->firstWhere('id', $user->group_id)->name;
+                $group = config('groups.types.' . $group);
+                $userTypeName = optional($userTypes->firstWhere('id', $user->user_type_id))->name;
+                $userType = config('user_types.types.' . $userTypeName);
+
+                $row = [
+                    $user->id,
+                    $user->user_name,
+                    $gender,
+                    $user->dob,
+                    $group,
+                    $userType,
+                    $user->login_id,
+                ];
+
+                fputcsv($file, $row);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

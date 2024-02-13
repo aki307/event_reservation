@@ -5,23 +5,64 @@
     <h1>ユーザ一覧</h1>
 </div>
 @if (count($users) > 0)
+<form action="{{ route('users.index') }}" method="GET" class="mb-4">
+    <div class="input-group mb-1">
+        <input type="text" class="form-control" name="search" placeholder="名前検索する" aria-label="検索キーワード" aria-describedby="basic-addon1" value="{{ request('search') }}">
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">検索</button>
+            <a href="javascript:void(0);" onclick="toggleSearchForm()">詳細検索する▼</a>
+        </div>
+    </div>
+
+    <table class="table" id="detailedSearchForm" style="display: none;">
+        <tbody>
+            <tr>
+                <td class="table-secondary">年齢:</td>
+                <td>
+                    <input type="radio" name="age_sort" value="none" {{ request('age_sort') == 'none' ? 'checked' : '' }}> 未選択
+                    <input type="radio" name="age_sort" value="asc" {{ request('age_sort') == 'asc' ? 'checked' : '' }}> 昇順
+                    <input type="radio" name="age_sort" value="desc" {{ request('age_sort') == 'desc' ? 'checked' : '' }}> 降順
+                </td>
+            </tr>
+            <tr>
+                <td class="table-secondary">性別:</td>
+                <td>
+                    <input type="radio" name="gender" value="" {{ request('gender') == '' ? 'checked' : '' }}> 未選択
+                    <input type="radio" name="gender" value="M" {{ request('gender') == 'male' ? 'checked' : '' }}> 男性
+                    <input type="radio" name="gender" value="F" {{ request('gender') == 'female' ? 'checked' : '' }}> 女性
+                </td>
+            </tr>
+            <tr>
+                <td class="table-secondary">所属グループ:</td>
+                <td>
+                    @foreach($groups as $group)
+                    <input type="checkbox" name="group_ids[]" value="{{ $group->id }}" {{ in_array($group->id, request('group_ids', [])) ? 'checked' : '' }}>{{ config('groups.types.' . $group->name) }}<br>
+                    @endforeach
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-primary">検索する</button>
+                        <button type="submit" class="btn btn-secondary">キャンセル</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="flex items-center justify-end mt-4">
+        <a class="btn btn-primary btn-block" href="{{ route('users.export') }}">CSV出力する</a>
+    </div>
+</form>
 {{ $users->links('pagination::bootstrap-4') }}
+
 <table class="table table-bordered">
     <thead class="thead-dark">
         <tr>
             <th scope="col">ID</th>
             <th scope="col">氏名</th>
-            <th scope="col">年齢
-                <a href="{{ route('users.index', ['age_sort' => $ageSort == 'none' ? 'asc' : ($ageSort == 'asc' ? 'desc' : 'none')]) }}">
-                    @if ($ageSort == 'desc')
-                    <i class="fa-solid fa-up-long" style="color: #ff0033;"></i>
-                    @elseif ($ageSort == 'asc')
-                    <i class="fa-solid fa-down-long" style="color: #1ca6e7;"></i>
-                    @else
-                    <i class="fa-solid fa-up-down" style="color:#6cb47c;"></i>
-                    @endif
-                </a>
-            </th>
+            <th scope="col">年齢</th>
             <th scope="col">性別</th>
             <th scope="col">所属グループ</th>
             <th scope="col">操作</th>
