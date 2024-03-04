@@ -52,6 +52,9 @@
                             <a class="dropdown-item" href="{{ route('google.login') }}">
                                 {{ __('Googleアカウントの認証をする') }}
                             </a>
+                            <a class="dropdown-item" href="{{ route('my-events.index') }}">
+                                {{ __('過去に参加したイベントをみる') }}
+                            </a>
 
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf

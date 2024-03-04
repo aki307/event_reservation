@@ -26,9 +26,6 @@ class User extends Authenticatable
         'group_id',
         'gender',
         'dob',
-        'google_account',
-        'email',
-        'google_token'
     ];
 
     /**
@@ -90,5 +87,10 @@ class User extends Authenticatable
     public function favoriteEvents()
     {
         return $this->belongsToMany(Event::class, 'favorite_events');
+    }
+
+    public function googleUser()
+    {
+        return $this->hasOne(GoogleUser::class, 'user_id');
     }
 }

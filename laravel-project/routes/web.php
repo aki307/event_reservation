@@ -53,6 +53,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/{event}/post', [CommentController::class, 'create'])->name('comment.post');
 
         Route::put('comments/{comment}', [CommentController::class, 'update'])->name('comment.update');
+
+        Route::get('/my-events', [EventsController::class, 'myAttendanceHistory'])->name('my-events.index');
     });
     Route::prefix('comments')->group(function () {
         Route::get('/comments/{comment}/edit', [CommentController::class, 'edit'])->where('comment', '[0-9]+');

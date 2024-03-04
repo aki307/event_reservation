@@ -14,6 +14,7 @@ use App\Services\AttendanceService;
 use Illuminate\Support\Facades\Log;
 use App\Services\EventViewService;
 use App\Services\CommentService;
+use App\Models\EventParticipation;
 
 class EventsController extends Controller
 {
@@ -40,10 +41,13 @@ class EventsController extends Controller
 
     public function store(CreateEventRequest $request)
     {
-
         $user_id = Auth::id();
         try {
             $event = $this->eventService->createEvent($request, $user_id);
+            $isGoogleUser = $request->session()->get('is_google_login', 'false');
+            if($isGoogleUser === true){
+                $this->eventService->createGoogleCalendar($request, $user_id);
+            }
             return view('events.registerEventComplete');
         } catch (\Exception $e) {
             Log::error("Event store failed: " . $e->getMessage(), ['user_id' => $user_id]);
@@ -61,6 +65,7 @@ class EventsController extends Controller
     }
 
     public function index(Request $request)
+
     {
         $events = $this->eventService->getAllEvents($request);
         $groups = $this->groupService->getAllGroups();
@@ -111,5 +116,14 @@ class EventsController extends Controller
             Log::error("Event deletion failed: " . $e->getMessage(), ['event_id' => $id]);
             return redirect()->back()->withErrors(['custom_error' => $e->getMessage()]);
         }
+    }
+
+    public function myAttendanceHistory()
+    {
+        $userId = Auth::id();
+        $participations = EventParticipation::with('event')
+                            ->where('user_id', $userId)
+                            ->get();
+        return view('events.attendance-history', ['events' => $participations]);
     }
 }

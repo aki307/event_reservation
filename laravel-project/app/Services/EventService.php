@@ -5,6 +5,10 @@ namespace App\Services;
 use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Google\Client;
+use Google\Service\Calendar;
+use App\Models\User;
+use Google\Service\Calendar\Event as GoogleEvent;
 
 class EventService
 {
@@ -37,20 +41,20 @@ class EventService
     }
 
     public function getAllEvents($request)
-    {   
+    {
 
         $events = Event::query();
         $titleTerm = $request->query('title');
-        if(!empty($titleTerm)) {
+        if (!empty($titleTerm)) {
             $events = $events->where('title', 'LIKE', '%' . $titleTerm . '%');
         }
         $descriptionTerm = $request->query('description');
-        if(!empty($descriptionTerm)) {
+        if (!empty($descriptionTerm)) {
             $events = $events->where('title', 'LIKE', '%' . $descriptionTerm . '%');
         }
-        if (empty($titleTerm) && empty($descriptionTerm) ) {
+        if (empty($titleTerm) && empty($descriptionTerm)) {
             $events = Event::orderBy('id', 'desc')->paginate(5);
-        }else {
+        } else {
             $events = $events->paginate(5);
         }
         return $events;
@@ -94,5 +98,27 @@ class EventService
             abort(403, '主催者本人でないと削除できません');
         }
         $event->delete();
+    }
+
+    public function createGoogleCalendar($data, $userId)
+    {
+        $user = User::find($userId);
+        $googleUser = $user->googleUser;
+        $googleToken = $googleUser->token;
+        $client = new Client();
+        $client->setAccessToken($googleToken);
+
+        $calendarService = new Calendar($client);
+
+        $event = new GoogleEvent();
+        $event->setSummary($data->input('title'));
+        $event->setLocation($data->input('location'));
+        $event->setDescription($data->input('description'));
+        $event->setStart(new Calendar\EventDateTime(['dateTime' => $data->input('start_date_and_time'), 'timeZone' => 'Asia/Tokyo']));
+        $event->setEnd(new Calendar\EventDateTime(['dateTime' => $data->input('end_date_and_time'), 'timeZone' => 'Asia/Tokyo']));
+        $calendarId = 'primary';
+        $createdEvent = $calendarService->events->insert($calendarId, $event);
+
+        return redirect()->back()->with('success', 'イベントをカレンダーに追加しました。');
     }
 }

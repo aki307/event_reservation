@@ -31,6 +31,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        session(['is_google_login' => true]);
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }
@@ -53,7 +54,9 @@ class AuthenticatedSessionController extends Controller
      */
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        return Socialite::driver('google')
+        ->scopes(['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events'])
+        ->redirect();
     }
 
     public function handleGoogleCallback(Request $request)
@@ -91,11 +94,12 @@ class AuthenticatedSessionController extends Controller
                     // ログイン処理
                     $user = User::where('id', $googleUserGet->user_id)->first();
                     Auth::login($user, true);
-                    if ($googleUser->token) {
+                    if ($googlehjUser->token) {
                         $googleUserGet->token = $googleUser->token;
                         $googleUserGet->save();
                     }
                     $request->session()->regenerate();
+                    session(['is_google_login' => true]);
                     return redirect()->intended(RouteServiceProvider::HOME);
                 } else {
                     return redirect()->route('login')->withErrors(['アプリ側でGoogleアカウントの登録がないため、Googleアカウントでのログインできません。ユーザー名とパスワードを入力してログイン後にメニューバーからGoogleアカウントの認証をうけてください。']);
