@@ -26,7 +26,7 @@ class CreateEventRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:80'],
             'start_date_and_time' => ['required', 'date_format:Y-m-d H:i:s'],
-            'end_date_and_time' => ['date_format:Y-m-d H:i:s', 'after:start_and_date_time'],
+            'end_date_and_time' => ['date_format:Y-m-d H:i:s', 'after:start_and_date_time','nullable'],
             'location' => ['required', 'string', 'max:80'],
             'description' => ['nullable', 'string'],
             'group_id' => ['required', 'exists:groups,id'],

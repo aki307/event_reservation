@@ -75,3 +75,4 @@ Route::get('login/google/callback', [AuthenticatedSessionController::class, 'han
 
 Route::get('/comments/{comment}/edit', [CommentController::class, 'edit'])->where('comment', '[0-9]+');
 Route::get('/users/export', 'App\Http\Controllers\UsersController@exportCsv')->name('users.export');
+Route::get('/test', 'App\Http\Controllers\EventsController@test')->name('test');

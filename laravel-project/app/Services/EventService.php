@@ -10,6 +10,10 @@ use Google\Service\Calendar;
 use App\Models\User;
 use Google\Service\Calendar\Event as GoogleEvent;
 
+use Google_Client;
+use Google_Service_Calendar;
+use Google_Service_Calendar_Event;
+
 class EventService
 {
     public function createEvent($data, $user_id)
@@ -100,25 +104,62 @@ class EventService
         $event->delete();
     }
 
-    public function createGoogleCalendar($data, $userId)
+    public function createGoogleCalendar($event, $userId)
     {
         $user = User::find($userId);
-        $googleUser = $user->googleUser;
-        $googleToken = $googleUser->token;
-        $client = new Client();
-        $client->setAccessToken($googleToken);
+        $userAccessToken = $user->googleUser->token;
+        $client = new Google_Client();
+        $client->setAccessToken($userAccessToken);
+        $service = new Google_Service_Calendar($client);
 
-        $calendarService = new Calendar($client);
+        $googleEvent = new Google_Service_Calendar_Event();
+        $googleEvent->setSummary($event->title);
+        $googleEvent->setLocation($event->location);
 
-        $event = new GoogleEvent();
-        $event->setSummary($data->input('title'));
-        $event->setLocation($data->input('location'));
-        $event->setDescription($data->input('description'));
-        $event->setStart(new Calendar\EventDateTime(['dateTime' => $data->input('start_date_and_time'), 'timeZone' => 'Asia/Tokyo']));
-        $event->setEnd(new Calendar\EventDateTime(['dateTime' => $data->input('end_date_and_time'), 'timeZone' => 'Asia/Tokyo']));
-        $calendarId = 'primary';
-        $createdEvent = $calendarService->events->insert($calendarId, $event);
+        // [memo]終了時刻が任意入力で未入力の場合、Google側は開始時刻を反映したいときに
+        // 終了時刻も必須とするので開始時刻の日付部分のみを抽出して反映して終了時刻を終日に設定する
+        // 開始日時の設定
+        $start = new \Google_Service_Calendar_EventDateTime();
+        if (empty($event->end_date_and_time)) {
+            $startDate = explode(' ', $event->start_date_and_time)[0];
+            $start->setDate($startDate);
+        } else {
+            $startDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_and_time)
+                ->setTimezone('Asia/Tokyo')
+                ->toRfc3339String();
+            $start->setDateTime($startDateTime);
+            $start->setTimeZone('Asia/Tokyo');
+        }
+        $googleEvent->setStart($start);
 
-        return redirect()->back()->with('success', 'イベントをカレンダーに追加しました。');
+        // 終了日時の設定
+        $end = new \Google_Service_Calendar_EventDateTime();
+        if (empty($event->end_date_and_time)) {
+            // 終了日が設定されていない場合、終日イベントとして開始日を終了日と設定する
+            $end->setDate($startDate);
+        } else {
+            $endDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->end_date_and_time)
+                ->setTimezone('Asia/Tokyo')
+                ->toRfc3339String();
+            $end->setDateTime($endDateTime);
+            $end->setTimeZone('Asia/Tokyo');
+        }
+        $googleEvent->setEnd($end);
+
+
+
+        if (!is_null($event->description)) {
+            $googleEvent->setDescription($event->description);
+        }
+
+
+        $createdEvent = $service->events->insert('primary', $googleEvent);
+        $createdGoogleCalendarEventId = $createdEvent->getId();
+
+        return $createdGoogleCalendarEventId;
+    }
+
+    public function deleteGoogleCalendar(){
+        
     }
 }

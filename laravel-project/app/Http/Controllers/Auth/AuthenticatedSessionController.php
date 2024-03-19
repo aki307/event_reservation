@@ -94,7 +94,7 @@ class AuthenticatedSessionController extends Controller
                     // ログイン処理
                     $user = User::where('id', $googleUserGet->user_id)->first();
                     Auth::login($user, true);
-                    if ($googlehjUser->token) {
+                    if ($googleUser->token) {
                         $googleUserGet->token = $googleUser->token;
                         $googleUserGet->save();
                     }

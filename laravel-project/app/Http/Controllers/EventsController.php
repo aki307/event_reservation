@@ -45,8 +45,16 @@ class EventsController extends Controller
         try {
             $event = $this->eventService->createEvent($request, $user_id);
             $isGoogleUser = $request->session()->get('is_google_login', 'false');
-            if($isGoogleUser === true){
-                $this->eventService->createGoogleCalendar($request, $user_id);
+
+            if ($isGoogleUser === true) {
+                $createdGoogleCalendarEventId = $this->eventService->createGoogleCalendar($event, $user_id);
+            }
+            $eventId = $event->id;
+            if($createdGoogleCalendarEventId) {
+                $this->attendanceService->attendEvent($eventId,$createdGoogleCalendarEventId);
+            }else {
+                $createdGoogleCalendarEventId=null;
+                $this->attendanceService->attendEvent($eventId,$createdGoogleCalendarEventId);
             }
             return view('events.registerEventComplete');
         } catch (\Exception $e) {
@@ -65,7 +73,6 @@ class EventsController extends Controller
     }
 
     public function index(Request $request)
-
     {
         $events = $this->eventService->getAllEvents($request);
         $groups = $this->groupService->getAllGroups();
@@ -84,7 +91,7 @@ class EventsController extends Controller
         $eventView = $this->eventViewService->findOrCreate($event);
         $this->eventViewService->countView($eventView);
 
-        $comments=$event->comments()->get();
+        $comments = $event->comments()->get();
 
         return view('events.show', compact('event', 'groups', 'userAttendance', 'attendees', 'comments'));
     }
@@ -122,8 +129,8 @@ class EventsController extends Controller
     {
         $userId = Auth::id();
         $participations = EventParticipation::with('event')
-                            ->where('user_id', $userId)
-                            ->get();
+            ->where('user_id', $userId)
+            ->get();
         return view('events.attendance-history', ['events' => $participations]);
     }
 }

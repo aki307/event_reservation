@@ -14,7 +14,6 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-        $schedule->command('backup:run')->dailyAt('01:00');
         $schedule->command('app:save-event-participations')->everyMinute();
         $schedule->command('');
     }
